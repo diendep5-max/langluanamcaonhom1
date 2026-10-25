@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đánh giá sự tham gia của cộng đồng - Di sản Làng lụa đũi Nam Cao</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#FAF8F5',
+                        'cream-dark': '#EFEBE4',
+                        silk: '#C4A47C',
+                        'silk-dark': '#8B7355',
+                        text: '#4A3B32',
+                        lotus: '#6B7B56',
+                        earth: '#A0522D'
+                    },
+                    fontFamily: {
+                        sans: ['"Be Vietnam Pro"', 'sans-serif'],
+                        serif: ['"Cormorant Garamond"', 'serif'],
+                        lora: ['"Lora"', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        html { scroll-behavior: smooth; }
+        .tab-content { display: none; animation: fadeIn 0.5s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .nav-link.active {
+            color: #8B7355;
+            border-bottom: 2px solid #8B7355;
+        }
+    </style>
+</head>
+<body class="bg-cream text-text font-sans antialiased selection:bg-silk selection:text-white">
+
+    <!-- Audio Element -->
+    <audio id="bg-music" loop src="./nhac-nen.mp4"></audio>
+
+    <!-- Floating Buttons -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+        <button onclick="scrollToTop()" class="bg-white/90 p-3 rounded-full shadow-md text-silk-dark hover:bg-silk-dark hover:text-white transition-all backdrop-blur-sm border border-silk/40 flex items-center justify-center" title="Lên đầu trang">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4"/><path d="M12 16V8"/></svg>
+        </button>
+        <button onclick="toggleAudio()" id="audio-btn" class="bg-silk-dark text-white p-3 rounded-full shadow-lg hover:bg-lotus transition-all flex items-center justify-center gap-2 group border border-white/20">
+            <svg id="icon-play" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <svg id="icon-pause" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="4" height="16" x="6" y="4"/><rect width="4" height="16" x="14" y="4"/></svg>
+            <span id="audio-text" class="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-300 ease-in-out font-medium text-sm">Phát nhạc nền</span>
+        </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 bg-cream/90 backdrop-blur-md border-b border-silk/30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0 flex items-center font-serif font-bold text-xl tracking-wider text-silk-dark uppercase">
+                    Nam Cao Heritage
+                </div>
+                <!-- Mobile menu button (Simplified for this version) -->
+                <div class="hidden md:flex space-x-6 overflow-x-auto">
+                    <button onclick="switchTab('home')" class="nav-link active px-2 py-2 text-sm font-medium transition-colors font-serif uppercase tracking-wide text-text/70 hover:text-silk-dark whitespace-nowrap">Trang chủ</button>
+                    <button onclick="switchTab('framework')" class="nav-link px-2 py-2 text-sm font-medium transition-colors font-serif uppercase tracking-wide text-text/70 hover:text-silk-dark whitespace-nowrap">Khung đánh giá</button>
+                    <button onclick="switchTab('results')" class="nav-link px-2 py-2 text-sm font-medium transition-colors font-serif uppercase tracking-wide text-text/70 hover:text-silk-dark whitespace-nowrap">Kết quả đánh giá</button>
+                    <button onclick="switchTab('analysis')" class="nav-link px-2 py-2 text-sm font-medium transition-colors font-serif uppercase tracking-wide text-text/70 hover:text-silk-dark whitespace-nowrap">Phân tích & Phản biện</button>
+                    <button onclick="switchTab('solutions')" class="nav-link px-2 py-2 text-sm font-medium transition-colors font-serif uppercase tracking-wide text-text/70 hover:text-silk-dark whitespace-nowrap">Giải pháp & Kết luận</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="relative min-h-[80vh]">
+        
+        <!-- ================= PHẦN 1: TRANG CHỦ ================= -->
+        <section id="home" class="tab-content active pb-20">
+            <div class="relative w-full h-[85vh] flex items-center justify-center overflow-hidden">
+                <img src="./tay ba lam.jpg" alt="Hoạt động cộng đồng làng đũi" class="absolute inset-0 w-full h-full object-cover opacity-35 mix-blend-multiply" />
+                <div class="absolute inset-0 bg-gradient-to-t from-cream via-cream/60 to-transparent"></div>
+                
+                <div class="relative z-10 text-center max-w-4xl px-4 mt-16">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="opacity-30 mx-auto mb-4">
+                        <path d="M12 22C12 22 19 18 19 12C19 6 12 2 12 2C12 2 5 6 5 12C5 18 12 22 12 22Z" stroke="#6B7B56" stroke-width="1" />
+                        <path d="M12 22C12 22 15 17 15 12C15 7 12 2 12 2" stroke="#6B7B56" stroke-width="1" />
+                        <path d="M12 22C12 22 9 17 9 12C9 7 12 2 12 2" stroke="#6B7B56" stroke-width="1" />
+                    </svg>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-text mb-6 leading-tight drop-shadow-sm">
+                        ĐÁNH GIÁ SỰ THAM GIA CỦA CỘNG ĐỒNG TRONG BẢO TỒN VÀ PHÁT TRIỂN <br/>
+                        <span class="text-silk-dark italic">DI SẢN LÀNG LỤA ĐŨI NAM CAO</span>
+                    </h1>
+                    <p class="text-xl md:text-2xl font-serif text-lotus mb-8 italic">
+                        Lắng nghe cộng đồng – Gìn giữ nghề truyền thống – Hướng tới phát triển bền vững.
+                    </p>
+                    <div class="w-24 h-[1px] bg-silk mx-auto mb-8"></div>
+                    <p class="text-lg md:text-xl text-text/90 leading-relaxed font-light px-4 md:px-12 mb-10 bg-white/40 p-4 rounded-sm backdrop-blur-sm border border-white/30 shadow-sm">
+                        "Nghề dệt đũi Nam Cao không chỉ được gìn giữ bằng những kỹ thuật thủ công, mà còn gắn với tri thức nghề, sinh kế và sự tiếp nối giữa các thế hệ. Nghiên cứu đặt ra câu hỏi về vai trò của cộng đồng trong quá trình bảo tồn và phát triển di sản: người dân đang tham gia ở mức độ nào, và tiếng nói của họ có được xem xét trong những quyết định liên quan đến tương lai làng nghề hay không?"
+                    </p>
+                    <div class="flex justify-center gap-4 flex-wrap">
+                        <button onclick="switchTab('framework')" class="px-8 py-3 bg-silk-dark text-white rounded-sm hover:bg-text transition-colors flex items-center gap-2 font-medium shadow-md">
+                            Khám phá nghiên cứu 
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                        </button>
+                        <button onclick="switchTab('results')" class="px-8 py-3 border border-silk-dark text-silk-dark bg-white/50 backdrop-blur-sm rounded-sm hover:bg-silk-dark/10 transition-colors font-medium">
+                            Xem kết quả đánh giá
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decorative Silk Ribbon SVG -->
+            <div class="absolute w-full overflow-hidden leading-none pointer-events-none opacity-30 mt-[-60px]">
+                <svg viewBox="0 0 1200 120" preserveAspectRatio="none" class="relative block w-full h-[60px]">
+                    <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="#C4A47C"></path>
+                </svg>
+            </div>
+
+            <section class="max-w-6xl mx-auto px-4 py-20 relative z-10">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                    <div>
+                        <h2 class="text-3xl font-serif font-bold mb-6 text-silk-dark">Di sản không chỉ nằm trong sản phẩm</h2>
+                        <p class="text-lg leading-relaxed mb-6 font-light">
+                            Nghề dệt lụa đũi Nam Cao gắn liền với tri thức, kỹ năng thủ công và đời sống của cộng đồng địa phương. Trong bối cảnh đương đại, bảo tồn nghề không chỉ là duy trì kỹ thuật sản xuất mà còn cần quan tâm đến sinh kế, hoạt động truyền nghề và vai trò của người dân trong quản lý, phát triển di sản.
+                        </p>
+                        <p class="text-lg leading-relaxed font-light">
+                            Nghiên cứu tập trung đánh giá sự tham gia của cộng đồng thông qua bốn trụ cột, từ điều kiện tham gia đến mức độ chủ động, vai trò trong quản trị và tác động đối với tính bền vững của di sản.
+                        </p>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-silk translate-x-4 translate-y-4 rounded-sm"></div>
+                        <img src="./khung cui to.jpg" alt="Khung cửi tơ" class="relative z-10 w-full h-auto object-cover rounded-sm shadow-md" />
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-cream-dark py-20 my-10 relative overflow-hidden">
+                <div class="max-w-6xl mx-auto px-4 text-center relative z-10">
+                    <h2 class="text-2xl md:text-4xl font-serif font-bold text-silk-dark mb-12 max-w-3xl mx-auto leading-snug">
+                        Sự tham gia của cộng đồng có thực sự chuyển hóa thành quyền ảnh hưởng đến tương lai di sản?
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+                        <div class="hidden md:block absolute top-1/2 left-0 w-full h-[1px] bg-silk -translate-y-1/2 z-0"></div>
+                        
+                        <div class="bg-cream p-8 rounded-sm shadow-sm relative z-10 border border-[#E0D8C8] hover:-translate-y-1 transition-transform">
+                            <h3 class="font-serif font-bold text-xl mb-3 tracking-wide text-silk-dark">HIỆN DIỆN</h3>
+                            <p class="text-sm font-light">Cộng đồng có tham gia các hoạt động liên quan đến di sản?</p>
+                        </div>
+                        
+                        <div class="bg-cream p-8 rounded-sm shadow-sm relative z-10 border border-[#E0D8C8] hover:-translate-y-1 transition-transform">
+                            <h3 class="font-serif font-bold text-xl mb-3 tracking-wide text-silk-dark">ĐÓNG GÓP</h3>
+                            <p class="text-sm font-light">Cộng đồng đóng góp công sức, kỹ năng và tri thức như thế nào?</p>
+                        </div>
+                        
+                        <div class="bg-cream p-8 rounded-sm shadow-sm relative z-10 border border-[#E0D8C8] hover:-translate-y-1 transition-transform">
+                            <h3 class="font-serif font-bold text-xl mb-3 tracking-wide text-lotus">ẢNH HƯỞNG</h3>
+                            <p class="text-sm font-light">Tiếng nói của cộng đồng có được xem xét trong quá trình ra quyết định?</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- ================= PHẦN 2: KHUNG ĐÁNH GIÁ ================= -->
+        <section id="framework" class="tab-content max-w-6xl mx-auto px-4 py-12">
+            <div class="mb-12 border-b border-silk/30 pb-12 flex flex-col md:flex-row gap-10 items-center">
+                <div class="flex-1">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" class="opacity-30 mx-auto mb-4 md:mx-0"><path d="M12 22C12 22 19 18 19 12C19 6 12 2 12 2C12 2 5 6 5 12C5 18 12 22 12 22Z" stroke="#6B7B56" stroke-width="1" /><path d="M12 22C12 22 15 17 15 12C15 7 12 2 12 2" stroke="#6B7B56" stroke-width="1" /><path d="M12 22C12 22 9 17 9 12C9 7 12 2 12 2" stroke="#6B7B56" stroke-width="1" /></svg>
+                    <h2 class="text-3xl font-serif font-bold mb-6 text-silk-dark">Đánh giá sự tham gia từ nhiều chiều cạnh</h2>
+                    <p class="text-lg font-light leading-relaxed mb-4">
+                        Nghiên cứu xây dựng khung đánh giá gồm bốn trụ cột nhằm xem xét các điều kiện thúc đẩy hoặc cản trở sự tham gia, hình thức và mức độ chủ động của cộng đồng, vai trò của người dân trong quản trị và những tác động đối với tính bền vững của nghề dệt đũi.
+                    </p>
+                    <p class="text-lg font-light leading-relaxed mb-6">
+                        Khung đánh giá không chỉ xem xét việc cộng đồng có tham gia hoạt động hay không, mà còn chú ý đến khả năng đóng góp, bày tỏ ý kiến và ảnh hưởng đến các quyết định liên quan đến di sản.
+                    </p>
+                </div>
+                <div class="flex-1">
+                    <img src="./hoa sen va lua.jpg" alt="Hoa sen và lụa đũi" class="w-full h-80 object-cover rounded-sm shadow-md" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                <div class="border-l-2 border-silk pl-6 py-2 bg-white/50 hover:bg-white transition-colors rounded-r-sm shadow-sm">
+                    <h3 class="text-xl font-serif font-bold text-silk mb-2">P1. Điều kiện tham gia (MOA)</h3>
+                    <p class="text-sm font-light mb-3 italic">Đánh giá động lực, cơ hội và năng lực có thể thúc đẩy hoặc cản trở người dân.</p>
+                    <ul class="text-sm mb-4 space-y-1 list-disc pl-4 text-text/80">
+                        <li><strong>Động lực:</strong> Nhận thức giá trị nghề, kỳ vọng lợi ích.</li>
+                        <li><strong>Cơ hội:</strong> Khả năng tiếp cận thông tin, hoạt động, cuộc họp.</li>
+                        <li><strong>Năng lực:</strong> Khả năng tiếp cận vốn, kỹ năng, thời gian.</li>
+                    </ul>
+                    <div class="bg-cream p-3 text-sm italic border border-cream-dark rounded-sm">
+                        “Người dân có đủ động lực, cơ hội và năng lực để tham gia thực chất vào quá trình bảo tồn và phát triển di sản hay không?”
+                    </div>
+                </div>
+
+                <div class="border-l-2 border-silk-dark pl-6 py-2 bg-white/50 hover:bg-white transition-colors rounded-r-sm shadow-sm">
+                    <h3 class="text-xl font-serif font-bold text-silk-dark mb-2">P2. Cấp độ tham gia (Pretty)</h3>
+                    <p class="text-sm font-light mb-3 italic">Xem xét hình thức và mức độ chủ động của cộng đồng.</p>
+                    <ul class="text-sm mb-4 space-y-1 list-disc pl-4 text-text/80">
+                        <li>Tiếp nhận thông tin & Tham gia thực hiện hoạt động.</li>
+                        <li>Đóng góp ý kiến.</li>
+                        <li>Tham gia xây dựng kế hoạch.</li>
+                        <li>Chủ động đề xuất và khởi xướng sáng kiến.</li>
+                    </ul>
+                    <div class="bg-cream p-3 text-sm italic border border-cream-dark rounded-sm">
+                        “Người dân chủ yếu thực hiện hoạt động theo kế hoạch có sẵn, hay có thể tham gia xây dựng kế hoạch và đề xuất hướng phát triển?”
+                    </div>
+                </div>
+
+                <div class="border-l-2 border-lotus pl-6 py-2 bg-white/50 hover:bg-white transition-colors rounded-r-sm shadow-sm">
+                    <h3 class="text-xl font-serif font-bold text-lotus mb-2">P3. Quản trị và quyền lực</h3>
+                    <p class="text-sm font-light mb-3 italic">Đánh giá vai trò của cộng đồng trong quản trị di sản.</p>
+                    <ul class="text-sm mb-4 space-y-1 list-disc pl-4 text-text/80">
+                        <li>Minh bạch thông tin.</li>
+                        <li>Cơ hội tham gia thảo luận.</li>
+                        <li>Khả năng ảnh hưởng đến quyết định.</li>
+                        <li>Sự phối hợp giữa nghệ nhân, người dân và doanh nghiệp.</li>
+                    </ul>
+                    <div class="bg-cream p-3 text-sm italic border border-cream-dark rounded-sm">
+                        “Ý kiến và nhu cầu của cộng đồng có được xem xét trong quá trình xây dựng và thực hiện các kế hoạch liên quan đến di sản hay không?”
+                    </div>
+                </div>
+
+                <div class="border-l-2 border-earth pl-6 py-2 bg-white/50 hover:bg-white transition-colors rounded-r-sm shadow-sm">
+                    <h3 class="text-xl font-serif font-bold text-earth mb-2">P4. Tác động và tính bền vững</h3>
+                    <p class="text-sm font-light mb-3 italic">Mối liên hệ giữa sự tham gia với sinh kế và khả năng bảo tồn dài hạn.</p>
+                    <ul class="text-sm mb-4 space-y-1 list-disc pl-4 text-text/80">
+                        <li>Sinh kế và điều kiện duy trì nghề.</li>
+                        <li>Khả năng tiếp nối kỹ thuật thủ công.</li>
+                        <li>Trao truyền tri thức giữa các thế hệ.</li>
+                        <li>Gắn kết cộng đồng.</li>
+                    </ul>
+                    <div class="bg-cream p-3 text-sm italic border border-cream-dark rounded-sm">
+                        “Sự tham gia của cộng đồng góp phần duy trì nghề dệt đũi trong dài hạn như thế nào?”
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-cream-dark p-8 rounded-sm text-center mb-12 shadow-inner border border-silk/20">
+                <h3 class="text-xl font-serif font-bold mb-6">Mô hình đánh giá</h3>
+                <div class="flex flex-col md:flex-row items-center justify-center gap-4 font-serif text-lg font-bold text-silk-dark mb-6">
+                    <span class="bg-white px-4 py-2 rounded-sm shadow-sm">HIỆN DIỆN</span>
+                    <span class="text-silk">→</span>
+                    <span class="bg-white px-4 py-2 rounded-sm shadow-sm">ĐÓNG GÓP</span>
+                    <span class="text-silk">→</span>
+                    <span class="bg-white px-4 py-2 rounded-sm shadow-sm">ẢNH HƯỞNG</span>
+                </div>
+                <p class="text-sm font-light max-w-2xl mx-auto leading-relaxed">
+                    - Hiện diện cho biết cộng đồng có mặt hoặc tham gia hoạt động.<br/>
+                    - Đóng góp cho biết cộng đồng cung cấp công sức, kỹ năng, tri thức hoặc nguồn lực.<br/>
+                    - Ảnh hưởng cho biết cộng đồng có khả năng tác động đến kế hoạch, quyết định và định hướng phát triển.
+                </p>
+                <div class="mt-6 inline-block bg-white px-6 py-3 border border-silk shadow-sm text-sm font-medium italic text-earth rounded-sm">
+                    “Có mặt trong hoạt động không đồng nghĩa với việc có tiếng nói; đóng góp công sức hoặc tri thức cũng không tự động đồng nghĩa với quyền tham gia quyết định.”
+                </div>
+            </div>
+            
+            <div class="border-t border-silk/30 pt-10 mt-8 flex flex-col md:flex-row gap-8 items-center">
+                <div class="md:w-2/3">
+                    <h4 class="font-serif font-bold text-text mb-3 text-lg">Phương pháp nghiên cứu và giới hạn dữ liệu</h4>
+                    <p class="text-sm font-light leading-relaxed text-text/80">
+                        Nghiên cứu sử dụng cách tiếp cận hỗn hợp, kết hợp phỏng vấn nghệ nhân, lắng nghe chia sẻ của người làm nghề, thảo luận nhóm và xem xét tài liệu địa phương. Các kết quả định lượng được trình bày theo bộ chỉ báo và kết quả tự đánh giá của nhóm nghiên cứu. Các điểm số cần được đọc cùng chỉ báo và phương pháp chấm điểm tương ứng. Những chỉ báo chưa được xác nhận đầy đủ phải được đối chiếu với bảng chấm điểm gốc trước khi công bố. Không mặc nhiên xem kết quả tự đánh giá là đại diện cho toàn bộ cộng đồng.
+                    </p>
+                </div>
+                <div class="md:w-1/3">
+                    <img src="./tamnhu va ba.jpg" alt="Thảo luận nhóm tại cộng đồng" class="w-full h-auto rounded-sm shadow-sm" />
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PHẦN 3: KẾT QUẢ ĐÁNH GIÁ ================= -->
+        <section id="results" class="tab-content max-w-6xl mx-auto px-4 py-12">
+            <div class="text-center mb-12">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" class="opacity-30 mx-auto mb-4"><path d="M12 22C12 22 19 18 19 12C19 6 12 2 12 2C12 2 5 6 5 12C5 18 12 22 12 22Z" stroke="#6B7B56" stroke-width="1" /><path d="M12 22C12 22 15 17 15 12C15 7 12 2 12 2" stroke="#6B7B56" stroke-width="1" /><path d="M12 22C12 22 9 17 9 12C9 7 12 2 12 2" stroke="#6B7B56" stroke-width="1" /></svg>
+                <h2 class="text-3xl font-serif font-bold mb-4 text-silk-dark">Kết quả tự đánh giá sau điền dã</h2>
+                <p class="text-lg font-light leading-relaxed max-w-3xl mx-auto italic mb-4">
+                    “Các điểm số dưới đây phản ánh kết quả tự đánh giá của nhóm nghiên cứu theo thang điểm 5. Dữ liệu được sử dụng để nhận diện những chỉ báo nổi bật và những khía cạnh cần tiếp tục xem xét, không mặc nhiên đại diện cho toàn bộ cộng đồng Nam Cao.”
+                </p>
+                <span class="inline-block px-4 py-1 bg-cream-dark text-xs uppercase tracking-wider rounded-full border border-silk/40">
+                    Thang điểm: 0–5
+                </span>
+            </div>
+
+            <!-- Chart.js Container -->
+            <div class="mb-12 h-[450px] w-full max-w-4xl mx-auto bg-white p-6 rounded-sm shadow-sm border border-cream-dark">
+                <canvas id="evaluationChart"></canvas>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="bg-white p-6 border-t-4 border-silk shadow-sm hover:shadow-md transition-shadow rounded-sm relative overflow-hidden">
+                    <h3 class="font-serif font-bold text-lg mb-2 relative z-10">Nhận thức về giá trị nghề</h3>
+                    <div class="text-4xl font-serif text-silk mb-3 relative z-10">4,0<span class="text-lg text-text/50">/5</span></div>
+                    <p class="text-sm font-light relative z-10">“Nhận thức về giá trị nghề là chỉ báo có điểm tự đánh giá cao nhất trong bảng dữ liệu được cung cấp. Đây là khía cạnh đáng chú ý khi xem xét động lực tham gia của cộng đồng.”</p>
+                </div>
+                <div class="bg-white p-6 border-t-4 border-silk-dark shadow-sm hover:shadow-md transition-shadow rounded-sm relative overflow-hidden">
+                    <h3 class="font-serif font-bold text-lg mb-2 relative z-10">Điều kiện tham gia</h3>
+                    <div class="mb-3 text-sm font-medium text-silk-dark relative z-10 bg-cream p-2 rounded">Minh bạch: 2,8/5 | Cơ hội: 2,7/5</div>
+                    <p class="text-sm font-light relative z-10">“Các chỉ báo này có điểm thấp hơn chỉ báo về nhận thức giá trị nghề. Kết quả gợi mở việc cần xem xét kỹ hơn những điều kiện thực tế để người dân có thể tham gia vào hoạt động bảo tồn.”</p>
+                </div>
+                <div class="bg-white p-6 border-t-4 border-lotus shadow-sm hover:shadow-md transition-shadow rounded-sm relative overflow-hidden">
+                    <h3 class="font-serif font-bold text-lg mb-2 relative z-10">Tiếng nói trong quyết định</h3>
+                    <div class="text-4xl font-serif text-lotus mb-3 relative z-10">2,4<span class="text-lg text-text/50">/5</span></div>
+                    <p class="text-sm font-light relative z-10">“Chỉ báo ảnh hưởng đến quyết định có điểm tự đánh giá 2,4/5. Đây là cơ sở để đặt câu hỏi về cơ hội tham gia quản trị của cộng đồng, đồng thời cần đối chiếu với bằng chứng điền dã.”</p>
+                </div>
+            </div>
+
+            <div class="mb-8 overflow-hidden rounded-sm shadow-md border border-white">
+                <img src="./lua o nha co.jpg" alt="Lụa ở nhà cổ" class="w-full h-72 object-cover object-center" />
+            </div>
+
+            <div class="bg-cream-dark/70 border border-silk/40 p-5 rounded-sm text-sm text-text/80 italic shadow-inner">
+                <strong class="text-silk-dark not-italic mr-2">Lưu ý về dữ liệu:</strong> Các điểm số phản ánh kết quả tự đánh giá theo bộ chỉ báo của nhóm nghiên cứu. Những chỉ báo có dấu sao (*) cần được đối chiếu với bảng chấm điểm gốc. Không sử dụng các điểm số để khẳng định mức độ đại diện cho toàn bộ cộng đồng nếu chưa có thiết kế khảo sát phù hợp.
+            </div>
+        </section>
+
+        <!-- ================= PHẦN 4: PHÂN TÍCH VÀ PHẢN BIỆN ================= -->
+        <section id="analysis" class="tab-content max-w-6xl mx-auto px-4 py-12">
+            <div class="text-center mb-16">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" class="opacity-30 mx-auto mb-4"><path d="M12 22C12 22 19 18 19 12C19 6 12 2 12 2C12 2 5 6 5 12C5 18 12 22 12 22Z" stroke="#6B7B56" stroke-width="1" /><path d="M12 22C12 22 15 17 15 12C15 7 12 2 12 2" stroke="#6B7B56" stroke-width="1" /><path d="M12 22C12 22 9 17 9 12C9 7 12 2 12 2" stroke="#6B7B56" stroke-width="1" /></svg>
+                <h2 class="text-3xl font-serif font-bold mb-4 text-silk-dark">Từ tham gia đến ảnh hưởng</h2>
+                <div class="w-16 h-[1px] bg-silk mx-auto"></div>
+            </div>
+
+            <div class="space-y-24">
+                <!-- P1 -->
+                <div class="flex flex-col md:flex-row gap-12 items-start">
+                    <div class="md:w-1/3">
+                        <div class="sticky top-24">
+                            <h3 class="text-2xl font-serif font-bold text-silk mb-4">P1. Điều kiện tham gia</h3>
+                            <div class="text-lg italic mb-6 font-serif border-l-2 border-silk pl-4 bg-white/50 py-1">Từ động lực đến cơ hội</div>
+                            <img src="./toancanh lua o nha co.jpg" alt="Toàn cảnh lụa ở nhà cổ" class="w-full h-auto rounded-sm shadow-md" />
+                        </div>
+                    </div>
+                    <div class="md:w-2/3 space-y-6 bg-white p-8 rounded-sm shadow-sm border border-cream-dark">
+                        <p class="font-light leading-relaxed text-lg">
+                            “Nhận thức về giá trị nghề và kỳ vọng về lợi ích là những khía cạnh cần thiết để xem xét động lực tham gia. Bên cạnh đó, khả năng tiếp cận thông tin, vốn, kỹ năng và thời gian có thể ảnh hưởng đến cơ hội tham gia của người làm nghề.
+                            Kết quả tự đánh giá gợi ý cần quan tâm hơn đến điều kiện để cộng đồng duy trì sự tham gia, thay vì chỉ xem xét mong muốn bảo tồn.”
+                        </p>
+                        <div class="bg-cream p-5 rounded-sm border border-silk/20">
+                            <h4 class="font-serif font-bold mb-3 text-sm uppercase tracking-wider text-silk">Dữ liệu liên quan</h4>
+                            <ul class="text-sm font-medium space-y-2">
+                                <li class="flex justify-between border-b border-cream-dark pb-1"><span>Nhận thức về giá trị nghề:</span> <span class="text-silk-dark">4,0/5</span></li>
+                                <li class="flex justify-between border-b border-cream-dark pb-1"><span>Kỳ vọng về lợi ích:</span> <span class="text-silk-dark">3,7/5</span></li>
+                                <li class="flex justify-between border-b border-cream-dark pb-1"><span>Minh bạch thông tin:</span> <span class="text-silk-dark">2,8/5</span></li>
+                                <li class="flex justify-between"><span>Cơ hội tham gia, vốn và kỹ năng:</span> <span class="text-silk-dark">2,7/5</span></li>
+                            </ul>
+                        </div>
+                        <div class="border-l-4 border-red-800/30 pl-5 py-2 bg-red-50/30">
+                            <h4 class="font-serif font-bold text-lg mb-1 text-silk-dark">Câu hỏi phản biện:</h4>
+                            <p class="italic text-earth font-medium">Có động lực gìn giữ nghề đã đủ để bảo đảm cộng đồng có thể tham gia lâu dài hay chưa?</p>
+                        </div>
+                        <div class="pt-2">
+                            <h4 class="font-medium mb-3 text-sm uppercase tracking-wider text-text">Cần xem xét thêm:</h4>
+                            <ul class="list-disc pl-5 text-sm font-light space-y-2 text-text/90">
+                                <li>Người dân có tiếp cận được thông tin về kế hoạch và hoạt động liên quan đến di sản không?</li>
+                                <li>Các hộ sản xuất có điều kiện tiếp cận vốn và kỹ năng cần thiết không?</li>
+                                <li>Những yếu tố về thời gian, sinh kế và nguồn lực ảnh hưởng thế nào đến khả năng tham gia?</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- P2 -->
+                <div class="flex flex-col md:flex-row-reverse gap-12 items-start">
+                    <div class="md:w-1/3">
+                        <div class="sticky top-24">
+                            <h3 class="text-2xl font-serif font-bold text-silk-dark mb-4">P2. Cấp độ tham gia</h3>
+                            <div class="text-lg italic mb-6 font-serif border-l-2 border-silk-dark pl-4 bg-white/50 py-1">Từ thực hành đến chủ động</div>
+                            <img src="./trung bay san pham.jpg" alt="Trưng bày sản phẩm lụa" class="w-full h-auto rounded-sm shadow-md" />
+                        </div>
+                    </div>
+                    <div class="md:w-2/3 space-y-6 bg-white p-8 rounded-sm shadow-sm border border-cream-dark">
+                        <p class="font-light leading-relaxed text-lg">
+                            “Sự tham gia có thể thể hiện qua việc trực tiếp sản xuất, gìn giữ kỹ thuật, truyền dạy tri thức, đóng góp ý kiến hoặc cùng xây dựng kế hoạch.
+                            Để đánh giá đúng cấp độ tham gia, cần phân biệt việc thực hiện hoạt động theo kế hoạch có sẵn với việc chủ động đề xuất và tham gia quyết định. Điểm số cần được đối chiếu với ghi chép điền dã để xác định hình thức nào được ghi nhận rõ ràng.”
+                        </p>
+                        <div class="bg-cream p-5 rounded-sm border border-silk-dark/20">
+                            <h4 class="font-serif font-bold mb-3 text-sm uppercase tracking-wider text-silk-dark">Dữ liệu liên quan</h4>
+                            <ul class="text-sm font-medium space-y-2">
+                                <li class="flex justify-between border-b border-cream-dark pb-1"><span>Tham gia thực hành nghề và hoạt động:</span> <span class="text-silk-dark">3,1/5*</span></li>
+                                <li class="flex justify-between"><span>Chủ động lập kế hoạch, đề xuất sáng kiến:</span> <span class="text-silk-dark">khoảng 2,5/5*</span></li>
+                            </ul>
+                        </div>
+                        <div class="border-l-4 border-red-800/30 pl-5 py-2 bg-red-50/30">
+                            <h4 class="font-serif font-bold text-lg mb-1 text-silk-dark">Câu hỏi phản biện:</h4>
+                            <p class="italic text-earth font-medium">Người dân đang tham gia với tư cách người thực hiện hay đã có cơ hội định hình cách thức phát triển di sản?</p>
+                        </div>
+                        <div class="pt-2">
+                            <h4 class="font-medium mb-3 text-sm uppercase tracking-wider text-text">Cần xem xét thêm:</h4>
+                            <ul class="list-disc pl-5 text-sm font-light space-y-2 text-text/90">
+                                <li>Người dân có chủ động đề xuất sáng kiến không?</li>
+                                <li>Ý kiến của nghệ nhân có được xem xét khi xây dựng hoạt động bảo tồn?</li>
+                                <li>Cộng đồng có tham gia từ giai đoạn lập kế hoạch hay chỉ tham gia khi hoạt động đã được quyết định?</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- P3 -->
+                <div class="flex flex-col md:flex-row gap-12 items-start">
+                    <div class="md:w-1/3">
+                        <div class="sticky top-24">
+                            <h3 class="text-2xl font-serif font-bold text-lotus mb-4">P3. Quản trị và quyền lực</h3>
+                            <div class="text-lg italic mb-6 font-serif border-l-2 border-lotus pl-4 bg-white/50 py-1">Tiếng nói của cộng đồng</div>
+                            <img src="./vong co 1.jpg" alt="Vòng cổ lụa thủ công" class="w-full h-auto rounded-sm shadow-md" />
+                        </div>
+                    </div>
+                    <div class="md:w-2/3 space-y-6 bg-white p-8 rounded-sm shadow-sm border border-cream-dark">
+                        <p class="font-light leading-relaxed text-lg">
+                            “Minh bạch thông tin, khả năng trao đổi và mức độ ảnh hưởng đến quyết định là những yếu tố quan trọng trong quản trị di sản có sự tham gia.
+                            Điểm tự đánh giá về ảnh hưởng đến quyết định là 2,4/5. Kết quả này gợi mở câu hỏi về cơ hội để người làm nghề đóng góp ý kiến và tác động đến các kế hoạch liên quan. Tuy nhiên, cần đối chiếu với bằng chứng thực địa trước khi kết luận về thực trạng quản trị tại Nam Cao.”
+                        </p>
+                        <div class="bg-cream p-5 rounded-sm border border-lotus/20">
+                            <h4 class="font-serif font-bold mb-3 text-sm uppercase tracking-wider text-lotus">Dữ liệu liên quan</h4>
+                            <ul class="text-sm font-medium space-y-2">
+                                <li class="flex justify-between border-b border-cream-dark pb-1"><span>Phối hợp giữa các bên, niềm tin:</span> <span class="text-silk-dark">3,3/5*</span></li>
+                                <li class="flex justify-between"><span>Ảnh hưởng đến quyết định:</span> <span class="text-silk-dark">2,4/5</span></li>
+                            </ul>
+                        </div>
+                        <div class="border-l-4 border-red-800/30 pl-5 py-2 bg-red-50/30">
+                            <h4 class="font-serif font-bold text-lg mb-1 text-silk-dark">Câu hỏi phản biện chính:</h4>
+                            <p class="italic text-earth font-medium">Ai đang có tiếng nói trong các quyết định liên quan đến tương lai của di sản?</p>
+                        </div>
+                        <div class="pt-2">
+                            <h4 class="font-medium mb-3 text-sm uppercase tracking-wider text-text">Cần xem xét thêm:</h4>
+                            <ul class="list-disc pl-5 text-sm font-light space-y-2 text-text/90">
+                                <li>Cộng đồng có được tham gia thảo luận về kế hoạch phát triển không?</li>
+                                <li>Quy trình tiếp nhận và xử lý ý kiến có minh bạch không?</li>
+                                <li>Vai trò của nghệ nhân, người dân và doanh nghiệp được xác định như thế nào?</li>
+                                <li>Các nhóm khác nhau trong cộng đồng có cơ hội tham gia tương xứng không?</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- P4 -->
+                <div class="flex flex-col md:flex-row-reverse gap-12 items-start">
+                    <div class="md:w-1/3">
+                        <div class="sticky top-24">
+                            <h3 class="text-2xl font-serif font-bold text-earth mb-4">P4. Tính bền vững</h3>
+                            <div class="text-lg italic mb-6 font-serif border-l-2 border-earth pl-4 bg-white/50 py-1">Duy trì nghề cho tương lai</div>
+                            <img src="./khung cui va hoa sen.jpg" alt="Khung cửi và hoa sen" class="w-full h-auto rounded-sm shadow-md" />
+                        </div>
+                    </div>
+                    <div class="md:w-2/3 space-y-6 bg-white p-8 rounded-sm shadow-sm border border-cream-dark">
+                        <p class="font-light leading-relaxed text-lg">
+                            “Tính bền vững của nghề dệt lụa đũi cần được xem xét thông qua điều kiện duy trì sinh kế, thực hành kỹ thuật và trao truyền tri thức giữa các thế hệ.
+                            Việc phát triển sản phẩm hoặc quảng bá di sản có thể mở ra cơ hội, nhưng không tự động chứng minh thu nhập được cải thiện hay nghề được bảo đảm lâu dài. Những tác động này cần được đánh giá bằng thông tin phù hợp về đời sống người làm nghề và hoạt động truyền dạy.”
+                        </p>
+                        <div class="bg-cream p-5 rounded-sm border border-earth/20">
+                            <h4 class="font-serif font-bold mb-3 text-sm uppercase tracking-wider text-earth
